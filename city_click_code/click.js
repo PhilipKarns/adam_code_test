@@ -55,6 +55,7 @@ firebase.auth().signInWithPopup(provider).then(function(result) {
   var secret = result.credential.secret;
   // The signed-in user info.
   var user = result.user;
+  
   // ...
 }).catch(function(error) {
   // Handle Errors here.
@@ -98,6 +99,147 @@ firebase.auth().signInWithPopup(provider).then(function(result) {
 
 
 
+//SAM'S CODE
+
+// variables
+var chatData = database.ref("/chat");
+var username = "";
+var message = "";
+
+//ajax call for settings variable data 
+$.ajax(settings).done(function (response) {
+  console.log(response);
+      for (var i = 0; i < 10; i++) {
+        //storing results from API response in a variable
+          var results = response[0].trends[i].name;
+          console.log(results);
+
+        //generate a button for each trend name
+        var newButton = $("<button class='button'>");
+        //add a class
+        newButton.attr("id", results);
+        //add each trend name as text inside the button
+            console.log(newButton.attr('id'));
+            console.log(newButton.attr('class'));
+        newButton.text(results);
+        //append each button to the page
+        $("#trends").append(newButton);
+    
+
+
+      }//response function end
+
+
+// click to open chat room of button's topic name. needs to be edited to not be able to make multiple of the same chat room to the page. 
+$(".button").on("click",function() {
+
+
+var trendNames = ($(this).attr('id').replace('#', ''));
+console.log(trendNames);
+chatData =database.ref("/chat- " + trendNames);
+
+    chatData.push();
+var chatDiv = $("<div id='chat'></div>");
+var chatMessages = $("<div id='messages'></div>");
+var chatBar = $("<div id='bar'></div>");
+var chatInput = $("<div id='input'></div>");
+
+// change this button to chatHide.. with id hide, and make it larger. 
+var chatSend = $("<button id='send'></button>");
+
+
+var chatTitle = $("<h3>" + $(this).attr('id') + "</h3>");
+chatDiv.append(chatMessages, chatBar, chatInput, chatSend, chatTitle, "<hr>");
+$('#display').append(chatDiv);
+
+
+$("#chat-send").on('click', function(){
+  if ($("#chat-input").val() !== "") {
+    var message = $("#chat-input").val();
+    chatData.push({
+      name: username.displayName,
+      message: message,
+      time: firebase.database.ServerValue.TIMESTAMP,
+    });
+    $("#chat-input").val("");
+  
+
+
+ 
+
+ console.log("Clicked");
+};
+
+
+});
+// if chatData -id doesn't exist...do this. else, don't:
+
+
+// Update chat on screen when new message detected - ordered by 'time' value
+chatData.orderByChild("time").on("child_added", function(snapshot) {
+// in addition to push, the button should change the lcoation
+  // If idNum is 0, then its a disconnect message and displays accordingly
+  // If not - its a user chat message
+  if (snapshot.val().idNum === 0) {
+    $("#display").append("<p class=player" + snapshot.val().idNum + "><span>"
+    + snapshot.val().name + "</span>: " + snapshot.val().message + "</p>");
+  }
+  else {
+    $("#display").append("<p class=player" + snapshot.val().idNum + "><span>"
+    + snapshot.val().name + "</span>: " + snapshot.val().message + "</p>");
+  }
+
+  // Keeps div scrolled to bottom on each update.
+  $("#display").scrollTop($("#display")[0].scrollHeight);
+});
+
+$("#chat-input").keypress(function(e) {
+
+  if (e.keyCode === 13 && $("#chat-input").val() !== "") {
+
+    var message = $("#chat-input").val();
+
+    chatData.push({
+      name: username.displayName,
+      message: message,
+      time: firebase.database.ServerValue.TIMESTAMP,
+    });
+
+    $("#chat-input").val("");
+  }
+});
+
+
+
+
+
+}); //ajax end
+
+
+
+
+
+
+
+
+//begin login to twitter function
+      function login() {
+        // Log the user in via Twitter
+        var provider = new firebase.auth.TwitterAuthProvider();
+        firebase.auth().signInWithPopup(provider).catch(function(error) {
+          console.log("Error authenticating user:", error);
+        });
+      }
+
+  
+
+
+
+
+
+
+
+});
 
 
    
