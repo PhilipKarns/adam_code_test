@@ -15,7 +15,7 @@
 //ajax call for settings variable data 
 $.ajax(settings).done(function (response) {
   console.log(response);
-  		for (var i = 0; i < 10; i++) {
+  		for (var i = 0; i < 12; i++) {
   			//storing results from API response in a variable
       	  var results = response[0].trends[i].name;
       	  console.log(results);
